@@ -1,0 +1,1 @@
+<footer><p class=" bg-dark text-white text-center p-4">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Placeat nam</p></footer>
