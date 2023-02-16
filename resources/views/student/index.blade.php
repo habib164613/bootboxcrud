@@ -1,53 +1,104 @@
 @extends('student.layouts.app')
 @section('content')
 <div class="container">
-    <div class="row">
-        <div class="col">
-            <div class="col">
-                <button class="btn btn-primary" id="createBtn">create student</button>
-            </div>
+    <div class="row mt-5" style="height:100vh">
+        <div class="col text-end">
+            <a href="{{ route('students.create') }}" class="btn btn-primary" id="bootModal">Create Student</a>
         </div>
     </div>
 </div>
-
 @endsection
-
 @section('script')
 <script>
-    $(document).ready(function () {
-        $('#createBtn').click(function (e) { 
-            e.preventDefault();
-            let dialog = bootbox.dialog({
-    title: 'A custom dialog with buttons and callbacks',
-    message: "<p>This dialog has buttons. Each button has it's own callback function.</p>",
-    size: 'large',
-    buttons: {
-        cancel: {
-            label: "I'm a cancel button!",
-            className: 'btn-danger',
-            callback: function(){
-                console.log('Custom cancel clicked');
+    $(document).ready(function() {
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
-        },
-        noclose: {
-            label: "I don't close the modal!",
-            className: 'btn-warning',
-            callback: function() {
-                console.log('Custom button clicked');
-                return false;
-            }
-        },
-        ok: {
-            label: "I'm an OK button!",
-            className: 'btn-info',
-            callback: function() {
-                console.log('Custom OK clicked');
-            }
-        }
-    }
-});
         });
+
+        // model click start
+        // $(document).on('click','#bootModal',function (e) {
+        //     e.preventDefault();
+        //     let modalUrl = $(this).attr('href');
+        //     $.ajax({
+        //         type: "GET",
+        //         url: modalUrl,
+
+        //         success: function(res) {
+        //             console.log(res);
+
+        //             let dialog = bootbox.dialog({
+        //                 title: 'Create Student',
+        //                 message: "<div class='studentContent'></div>",
+        //                 size: 'large',
+        //             });
+        //             $('.studentContent').html(res);
+        //         }
+        //     });
+            
+        // });
+       // bootbox modal show
+        $(document).on('click', '#bootModal', function (e) {
+            e.preventDefault();
+            const modalUrl = $(this).attr('href');
+            const modalTitle = $(this).attr('title');
+            // form url 
+            formUrl = $(this).attr('formUrl');
+            $.ajax({
+                type: "GET",
+                url: modalUrl,
+                success: function (res) {
+                    dialog = bootbox.dialog({
+                        title: 'Student ' + modalTitle,
+                        message: "<div class='studentContent'></div>",
+                        size: 'large',
+                    });
+                    // push the thml in studentContent div
+                    $('.studentContent').html(res);
+                    // generate form id 
+                   // formId = "#" + $('.studentContent').find('form').attr('id');
+                    // generate form action 
+                   // $(formId).attr('action', formUrl);
+                }
+            });
+        });
+
+        // $('#bootModal').click(function(e) {
+        //     e.preventDefault();
+           
+        // });
+        // model click end
+
+        $(document).on('submit', '#createStudentForm', function(e) {
+            e.preventDefault();
+
+            let formUrl = $(this).attr('action');
+
+            let formData = new FormData($('#createStudentForm')[0]);
+
+
+            $.ajax({
+                type: "POST",
+                url: formUrl,
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(res) {
+                    console.log(res);
+
+                }
+            });
+
+
+        });
+
+
+
+
+
+
+
     });
 </script>
-
 @endsection
